@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+
+jobs:
+  # Layer 1 — Soroban contract unit tests (fast, no network)
+  contract-tests:
+    name: Contract Tests (Rust)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - name: Run Soroban unit tests
+        run: cd contracts/receipt-verifier && cargo test
+
+  # Layer 3 — Next.js route handler tests (fast, mocked)
+  app-tests:
+    name: App Tests (Vitest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm install
+        working-directory: apps/web
+      - run: npx vitest run
+        working-directory: apps/web

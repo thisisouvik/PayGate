@@ -1,0 +1,63 @@
+// Prisma schema for PayGate
+// Docs: https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")  // Neon pooled connection — used by the app at runtime
+  directUrl = env("DIRECT_URL")    // Neon direct connection — used by `prisma migrate` only
+}
+
+// ─── Models ────────────────────────────────────────────────────────────────────
+
+/// A developer who registers APIs through PayGate.
+/// Identity is their Stellar wallet address (no password auth).
+model Developer {
+  id            String   @id @default(cuid())
+  stellarWallet String   @unique          // G... Stellar public key
+  email         String?  @unique
+  createdAt     DateTime @default(now())
+
+  apis          Api[]
+}
+
+/// A paywalled API registered by a developer.
+/// Each Api gets a unique slug used in /api/x/[slug].
+model Api {
+  id          String    @id @default(cuid())
+  developer   Developer @relation(fields: [developerId], references: [id])
+  developerId String
+
+  slug        String    @unique          // e.g. "cricket-predictor" → /api/x/cricket-predictor
+  name        String
+  description String?
+  targetUrl   String                     // the developer's real backend URL (proxied)
+  priceUsdc   Decimal                    // e.g. 0.002 (in USDC)
+  isListed    Boolean   @default(false)  // shown on the public /directory page
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  calls       ApiCall[]
+}
+
+/// A record of a single settled payment call through a paywalled API.
+/// This is the source of truth for earnings and audit trail.
+model ApiCall {
+  id           String   @id @default(cuid())
+  api          Api      @relation(fields: [apiId], references: [id])
+  apiId        String
+
+  callerWallet String                      // Stellar address of the paying agent
+  amountUsdc   Decimal                     // actual amount paid
+  txHash       String   @unique            // Stellar transaction hash (immutable audit trail)
+  network      String   @default("testnet") // "testnet" | "pubnet"
+  status       String                      // "settled" | "failed"
+  latencyMs    Int?                         // ms from request received to upstream response
+  createdAt    DateTime @default(now())
+
+  @@index([apiId, createdAt])   // fast per-API analytics queries
+  @@index([callerWallet])       // fast per-caller queries
+}
