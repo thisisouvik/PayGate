@@ -35,8 +35,8 @@ export async function GET(_req: NextRequest, { params }: Params) {
     const result = await prisma.apiCall.count({
       where: { apiId, status: "settled" },
     });
+    await setCallCount(apiId, result);
     totalCalls = result;
-    await setCallCount(apiId, totalCalls);
   }
 
   // ── Distinct callers (always from Postgres — cheap indexed query) ────────────
