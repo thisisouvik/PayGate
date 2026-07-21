@@ -8,8 +8,6 @@ export function LiveFeed({ apiId }: { apiId: string }) {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
-
     async function fetchFeed() {
       try {
         const res = await fetch(`/api/internal/feed/${apiId}`);
@@ -24,7 +22,7 @@ export function LiveFeed({ apiId }: { apiId: string }) {
     }
 
     fetchFeed();
-    interval = setInterval(fetchFeed, 3000); // Poll every 3 seconds
+    const interval = setInterval(fetchFeed, 3000); // Poll every 3 seconds
 
     return () => clearInterval(interval);
   }, [apiId]);

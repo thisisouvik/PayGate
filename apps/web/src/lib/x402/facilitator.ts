@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/lib/x402/facilitator.ts
 //
 // LOCAL Stellar facilitator — runs verify + settle in-process using ExactStellarScheme.

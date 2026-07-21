@@ -1,7 +1,7 @@
 // src/lib/stellar/soroban.ts
 // Handles interactions with the Soroban receipt-verifier contract.
 
-import { Keypair, rpc, TransactionBuilder, Networks, Contract, Address, xdr, nativeToScVal } from "@stellar/stellar-sdk";
+import { Keypair, rpc, TransactionBuilder, Contract, Address, nativeToScVal } from "@stellar/stellar-sdk";
 import { getRpcUrl, getNetworkPassphrase } from "./signer";
 
 const contractId = process.env.SOROBAN_CONTRACT_ID;

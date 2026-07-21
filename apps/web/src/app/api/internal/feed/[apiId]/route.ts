@@ -6,9 +6,10 @@ import { getRecentCalls } from "@/lib/db/calls";
 
 export async function GET(
   request: Request,
-  { params }: { params: { apiId: string } }
+  context: { params: Promise<{ apiId: string }> }
 ) {
   try {
+    const { apiId } = await context.params;
     const session = await getSession();
     
     // Auth check - ensure the developer owns this API
@@ -16,7 +17,7 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const api = await getApiById(params.apiId, session.developerId);
+    const api = await getApiById(apiId, session.developerId);
     if (!api) {
       return NextResponse.json({ error: "API not found" }, { status: 404 });
     }

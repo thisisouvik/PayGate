@@ -7,7 +7,7 @@
 // verification query both read from here.
 
 import { prisma } from "@/lib/prisma";
-import type { ApiCall, Prisma } from "@prisma/client";
+import type { ApiCall } from "@prisma/client";
 import type { Decimal } from "@prisma/client/runtime/library";
 
 // ─── Types ────────────────────────────────────────────────────────────────────

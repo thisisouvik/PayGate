@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/lib/x402/middleware.ts
 // Core x402 payment verification logic for Next.js route handlers.
 //

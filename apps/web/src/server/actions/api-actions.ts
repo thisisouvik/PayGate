@@ -1,7 +1,7 @@
 "use server";
 
 import { getSession } from "@/lib/auth/session";
-import { createApi, updateApi, deactivateApi } from "@/lib/db/apis";
+import { createApi, updateApi } from "@/lib/db/apis";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 

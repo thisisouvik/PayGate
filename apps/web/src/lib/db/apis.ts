@@ -3,7 +3,7 @@
 // Every dashboard CRUD operation and every paywall route lookup goes through here.
 
 import { prisma } from "@/lib/prisma";
-import type { Api, Prisma } from "@prisma/client";
+import type { Api } from "@prisma/client";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
