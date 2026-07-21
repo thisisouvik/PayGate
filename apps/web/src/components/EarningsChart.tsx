@@ -59,6 +59,7 @@ export function EarningsChart({ data }: { data: DailyEarnings[] }) {
         <Tooltip 
           contentStyle={{ backgroundColor: "#18181b", border: "1px solid #27272a", borderRadius: "8px" }}
           itemStyle={{ color: "#2dd4bf" }}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           formatter={(value: any) => [`${Number(value || 0).toFixed(4)} USDC`, "Earnings"]}
           labelStyle={{ color: "#a1a1aa", marginBottom: "4px" }}
         />

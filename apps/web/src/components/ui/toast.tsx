@@ -72,7 +72,7 @@ function SingleToast({
   onDismiss: (id: string) => void;
 }) {
   const [visible, setVisible] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     // Slide in
@@ -85,7 +85,7 @@ function SingleToast({
 
     return () => {
       clearTimeout(enterTimer);
-      clearTimeout(timerRef.current);
+      if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, [item.id, item.duration, onDismiss]);
 

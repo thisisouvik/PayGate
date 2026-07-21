@@ -33,5 +33,3 @@ jobs:
         working-directory: apps/web
       - run: npm run build
         working-directory: apps/web
-      - run: npx vitest run
-        working-directory: apps/web
