@@ -1,36 +1,47 @@
-// src/app/api/internal/feed/[apiId]/route.ts
-// Internal route polled by the dashboard every 3-5 seconds for the live feed.
-// Returns the last 50 settled calls from Redis (fast, no Postgres hit).
-// Falls back to Prisma if Redis has no data yet.
+import { NextResponse } from "next/server";
+import { getFeed, pushToFeed } from "@/lib/feed";
+import { getSession } from "@/lib/auth/session";
+import { getApiById } from "@/lib/db/apis";
+import { getRecentCalls } from "@/lib/db/calls";
 
-import { NextRequest, NextResponse } from "next/server";
-import { getFeed } from "@/lib/feed";
-import { getRecentCalls } from "@/lib/db";
+export async function GET(
+  request: Request,
+  { params }: { params: { apiId: string } }
+) {
+  try {
+    const session = await getSession();
+    
+    // Auth check - ensure the developer owns this API
+    if (!session.isLoggedIn) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-type Params = { params: Promise<{ apiId: string }> };
+    const api = await getApiById(params.apiId, session.developerId);
+    if (!api) {
+      return NextResponse.json({ error: "API not found" }, { status: 404 });
+    }
 
-export async function GET(_req: NextRequest, { params }: Params) {
-  const { apiId } = await params;
+    // Try to get feed from Redis
+    let feed = await getFeed(api.id);
 
-  if (!apiId) {
-    return NextResponse.json({ error: "Missing apiId" }, { status: 400 });
+    // If Redis is empty (e.g. key expired or was flushed), populate from Postgres
+    if (feed.length === 0) {
+      const recentCalls = await getRecentCalls(api.id, 50);
+      
+      feed = recentCalls.map(call => ({
+        callerWallet: call.callerWallet,
+        amountUsdc: Number(call.amountUsdc),
+        txHash: call.txHash,
+        ts: call.createdAt.getTime()
+      }));
+
+      // Fire and forget cache priming
+      Promise.all([...feed].reverse().map(entry => pushToFeed(api.id, entry))).catch(console.error);
+    }
+
+    return NextResponse.json({ feed });
+  } catch (error) {
+    console.error("Feed error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-
-  // Try Redis first (fast path)
-  const redisFeed = await getFeed(apiId);
-
-  if (redisFeed.length > 0) {
-    return NextResponse.json({ source: "redis", entries: redisFeed });
-  }
-
-  // Fallback: read from Postgres and return in the same shape
-  const calls = await getRecentCalls(apiId, 50);
-  const entries = calls.map((c) => ({
-    callerWallet: c.callerWallet,
-    amountUsdc: Number(c.amountUsdc),
-    txHash: c.txHash,
-    ts: c.createdAt.getTime(),
-  }));
-
-  return NextResponse.json({ source: "postgres", entries });
 }
