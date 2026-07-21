@@ -74,3 +74,4 @@ export function EarningsChart({ data }: { data: DailyEarnings[] }) {
     </ResponsiveContainer>
   );
 }
+

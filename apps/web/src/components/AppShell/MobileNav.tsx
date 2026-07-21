@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/Link";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
   LayoutDashboard, 
@@ -94,3 +94,4 @@ export function MobileNav({ walletAddress }: { walletAddress: string }) {
     </div>
   );
 }
+

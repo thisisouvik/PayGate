@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/Link";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
   LayoutDashboard, 
@@ -83,3 +83,4 @@ export function AppSidebar({ walletAddress }: { walletAddress: string }) {
     </div>
   );
 }
+
