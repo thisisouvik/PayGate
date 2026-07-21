@@ -4,6 +4,7 @@ import { MobileNav } from "@/components/AppShell/MobileNav";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { getDeveloperTotalEarnings } from "@/lib/db/calls";
 
 export default async function DirectoryLayout({
   children,
@@ -14,16 +15,18 @@ export default async function DirectoryLayout({
 
   // If the user is logged in, show the standard dashboard sidebar layout
   if (session.isLoggedIn) {
+    const totalEarnings = await getDeveloperTotalEarnings(session.developerId);
+
     return (
       <div className="flex min-h-screen flex-col md:flex-row bg-zinc-950 text-zinc-50">
         {/* Desktop Sidebar */}
         <div className="hidden md:block md:w-64 border-r border-zinc-800 bg-zinc-900/50">
-          <AppSidebar walletAddress={session.stellarWallet} />
+          <AppSidebar walletAddress={session.stellarWallet} totalEarnings={totalEarnings} />
         </div>
 
         {/* Mobile Top Nav */}
         <div className="md:hidden border-b border-zinc-800 bg-zinc-900/50">
-          <MobileNav walletAddress={session.stellarWallet} />
+          <MobileNav walletAddress={session.stellarWallet} totalEarnings={totalEarnings} />
         </div>
 
         {/* Main Content Area */}

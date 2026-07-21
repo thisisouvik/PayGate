@@ -12,10 +12,12 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/toast";
 
-export function AppSidebar({ walletAddress }: { walletAddress: string }) {
+export function AppSidebar({ walletAddress, totalEarnings }: { walletAddress: string; totalEarnings?: number }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { success } = useToast();
 
   const links = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -67,10 +69,35 @@ export function AppSidebar({ walletAddress }: { walletAddress: string }) {
 
       <div className="pt-6 border-t border-zinc-800/50 mt-auto">
         <div className="px-3 mb-4">
-          <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Connected Wallet</p>
-          <p className="text-sm font-mono text-zinc-300 bg-zinc-900 py-1.5 px-2 rounded-md border border-zinc-800 overflow-hidden text-ellipsis">
-            {truncateWallet(walletAddress)}
-          </p>
+          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-3 shadow-sm relative overflow-hidden group">
+            {/* Subtle glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            
+            <div className="relative z-10">
+              <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Total Earned</p>
+              <div className="flex items-center gap-1.5 mb-3">
+                <span className="text-xl font-bold text-teal-400">
+                  ${(totalEarnings || 0).toFixed(4)}
+                </span>
+                <span className="text-xs text-zinc-500 font-medium">USDC</span>
+              </div>
+              
+              <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Connected Wallet</p>
+              <div 
+                className="flex items-center justify-between bg-zinc-950 py-1.5 px-2.5 rounded-md border border-zinc-800 cursor-pointer hover:border-violet-500/50 transition-colors"
+                onClick={() => {
+                  navigator.clipboard.writeText(walletAddress);
+                  success("Address copied to clipboard", "You can now paste it anywhere.");
+                }}
+                title="Copy Wallet Address"
+              >
+                <span className="text-sm font-mono text-zinc-300">
+                  {truncateWallet(walletAddress)}
+                </span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-500 hover:text-violet-400 transition-colors"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              </div>
+            </div>
+          </div>
         </div>
         <Button 
           variant="ghost" 
