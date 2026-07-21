@@ -18,9 +18,9 @@ jobs:
       - name: Run Soroban unit tests
         run: cd contracts/receipt-verifier && cargo test
 
-  # Layer 3 — Next.js route handler tests (fast, mocked)
+  # Layer 2 — Next.js Application tests (Lint, Build, Vitest)
   app-tests:
-    name: App Tests (Vitest)
+    name: App Tests (Lint, Build, Vitest)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,6 +29,9 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm install
+      - run: npm run lint
+        working-directory: apps/web
+      - run: npm run build
         working-directory: apps/web
       - run: npx vitest run
         working-directory: apps/web
