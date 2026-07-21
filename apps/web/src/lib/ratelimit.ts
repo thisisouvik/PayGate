@@ -10,3 +10,4 @@ export const ratelimit = new Ratelimit({
   analytics: true, // enables request counting visible in the Upstash console
   prefix: "paygate:ratelimit",
 });
+

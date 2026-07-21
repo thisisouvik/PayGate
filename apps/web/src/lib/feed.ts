@@ -128,3 +128,4 @@ export async function setCallCount(
 ): Promise<void> {
   await redis.set(totalCallsKey(apiId), count);
 }
+
