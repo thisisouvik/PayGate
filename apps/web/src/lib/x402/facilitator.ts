@@ -64,6 +64,14 @@ class LocalStellarFacilitator {
   }
 }
 
-// Singleton — Next.js route handlers re-use this across invocations within one worker.
-export const facilitator = new LocalStellarFacilitator();
+// Lazy singleton — only instantiated on the first real request, never at build time.
+// This prevents `next build` from throwing when env vars are absent in CI.
+let _facilitator: LocalStellarFacilitator | null = null;
+
+export function getFacilitator(): LocalStellarFacilitator {
+  if (!_facilitator) {
+    _facilitator = new LocalStellarFacilitator();
+  }
+  return _facilitator;
+}
 

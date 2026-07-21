@@ -15,7 +15,7 @@ import {
   encodePaymentRequiredHeader,
 } from "@x402/core/http";
 import { USDC_PUBNET_ADDRESS } from "@x402/stellar";
-import { facilitator } from "./facilitator";
+import { getFacilitator } from "./facilitator";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -114,7 +114,7 @@ export async function verifyPayment(
   }
 
   // Step 1: verify — confirm the payment is valid before settling
-  const verifyResult = await facilitator.verify(
+  const verifyResult = await getFacilitator().verify(
     paymentPayload as any,
     requirements as any
   );
@@ -126,7 +126,7 @@ export async function verifyPayment(
   }
 
   // Step 2: settle — broadcast the transaction on Stellar
-  const settleResult = await facilitator.settle(
+  const settleResult = await getFacilitator().settle(
     paymentPayload as any,
     requirements as any
   );
