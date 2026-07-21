@@ -59,7 +59,7 @@ export function EarningsChart({ data }: { data: DailyEarnings[] }) {
         <Tooltip 
           contentStyle={{ backgroundColor: "#18181b", border: "1px solid #27272a", borderRadius: "8px" }}
           itemStyle={{ color: "#2dd4bf" }}
-          formatter={(value: number) => [`${value.toFixed(4)} USDC`, "Earnings"]}
+          formatter={(value: any) => [`${Number(value || 0).toFixed(4)} USDC`, "Earnings"]}
           labelStyle={{ color: "#a1a1aa", marginBottom: "4px" }}
         />
         <Line
