@@ -38,3 +38,4 @@ export async function getDeveloperById(
 ): Promise<Developer | null> {
   return prisma.developer.findUnique({ where: { id } });
 }
+
