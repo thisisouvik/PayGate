@@ -1,26 +1,67 @@
 // src/lib/x402/facilitator.ts
-// Connects to the hosted x402 facilitator that handles verify + settle
-// against the Stellar network on our behalf.
 //
-// In v2.x: HTTPFacilitatorClient is in @x402/core/http (not @x402/core/server).
-// Constructor takes a plain URL string.
+// LOCAL Stellar facilitator — runs verify + settle in-process using ExactStellarScheme.
+// This replaces the hosted OpenZeppelin HTTPFacilitatorClient so we can use our own
+// self-issued testnet USDC contract without needing Circle approval or an API key.
+//
+// On mainnet, swap PAYGATE_TREASURY_SECRET_KEY for a proper HSM / KMS signer.
 
-import { HTTPFacilitatorClient } from "@x402/core/http";
+import { ExactStellarScheme } from "@x402/stellar/exact/facilitator";
+import { createEd25519Signer } from "@x402/stellar";
 
-const FACILITATOR_TESTNET = "https://channels.openzeppelin.com/x402/testnet";
-const FACILITATOR_MAINNET = "https://channels.openzeppelin.com/x402/mainnet";
+const TREASURY_SECRET = process.env.PAYGATE_TREASURY_SECRET_KEY;
+const NETWORK =
+  process.env.STELLAR_NETWORK === "pubnet" ? "stellar:pubnet" : "stellar:testnet";
+
+function buildScheme(): ExactStellarScheme {
+  if (!TREASURY_SECRET) {
+    throw new Error("PAYGATE_TREASURY_SECRET_KEY is not set");
+  }
+  const signer = createEd25519Signer(TREASURY_SECRET, NETWORK as any);
+  return new ExactStellarScheme([signer as any], { areFeesSponsored: true });
+}
 
 /**
- * URL of the active facilitator — driven by STELLAR_NETWORK env var.
- * Switch to "pubnet" in .env to go live on mainnet.
+ * A FacilitatorClient that processes Stellar exact-scheme payments in-process.
+ * No external HTTP calls — verify and settle are handled locally against the
+ * Stellar testnet (or pubnet) RPC node.
  */
-export const FACILITATOR_URL =
-  process.env.STELLAR_NETWORK === "pubnet"
-    ? FACILITATOR_MAINNET
-    : FACILITATOR_TESTNET;
+class LocalStellarFacilitator {
+  private scheme: ExactStellarScheme;
 
-/**
- * Configured facilitator client.
- * Used in /api/x/[slug] to call facilitator.verify() + facilitator.settle().
- */
-export const facilitator = new HTTPFacilitatorClient({ url: FACILITATOR_URL });
+  constructor() {
+    this.scheme = buildScheme();
+  }
+
+  async verify(
+    paymentPayload: any,
+    paymentRequirements: any
+  ): Promise<any> {
+    return this.scheme.verify(paymentPayload as any, paymentRequirements as any);
+  }
+
+  async settle(
+    paymentPayload: any,
+    paymentRequirements: any
+  ): Promise<any> {
+    return this.scheme.settle(paymentPayload as any, paymentRequirements as any);
+  }
+
+  async getSupported(): Promise<any> {
+    return {
+      kinds: [
+        {
+          x402Version: 2,
+          scheme: "exact",
+          network: NETWORK as any,
+          extra: { areFeesSponsored: true },
+        },
+      ],
+      extensions: [],
+      signers: {},
+    };
+  }
+}
+
+// Singleton — Next.js route handlers re-use this across invocations within one worker.
+export const facilitator = new LocalStellarFacilitator();

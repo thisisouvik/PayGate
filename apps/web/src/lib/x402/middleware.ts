@@ -13,8 +13,8 @@ import {
   decodePaymentSignatureHeader,
   encodePaymentRequiredHeader,
 } from "@x402/core/http";
-import { USDC_TESTNET_ADDRESS, USDC_PUBNET_ADDRESS } from "@x402/stellar";
-import { facilitator, FACILITATOR_URL } from "./facilitator";
+import { USDC_PUBNET_ADDRESS } from "@x402/stellar";
+import { facilitator } from "./facilitator";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -37,10 +37,11 @@ export type VerifyResult =
 const NETWORK =
   process.env.STELLAR_NETWORK === "pubnet" ? "stellar:pubnet" : "stellar:testnet";
 
+// On testnet we use our own self-issued USDC SAC (bootstrapped by scripts/bootstrap-usdc.ts)
 const USDC_ASSET =
   process.env.STELLAR_NETWORK === "pubnet"
     ? USDC_PUBNET_ADDRESS
-    : USDC_TESTNET_ADDRESS;
+    : (process.env.SOROBAN_USDC_CONTRACT ?? "CDOF7XY3MGEKY3MNNJF5STMADAQRAFSHXP7WQIOCPEXM7O3BTPZYF7WH");
 
 /**
  * Build the paymentRequirements object that describes what the caller must pay.

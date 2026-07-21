@@ -12,7 +12,7 @@ stellar keys generate deployer --network testnet --fund
 
 echo "Deploying to testnet..."
 CONTRACT_ID=$(stellar contract deploy \
-  --wasm target/wasm32-unknown-unknown/release/receipt_verifier.wasm \
+  --wasm ../target/wasm32v1-none/release/receipt_verifier.wasm \
   --source deployer \
   --network testnet)
 

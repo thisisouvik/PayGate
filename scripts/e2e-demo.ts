@@ -7,8 +7,8 @@
 //   2. AGENT_STELLAR_SECRET_KEY set in env
 //   3. Agent account funded with testnet XLM + USDC trustline established
 
-import { x402HTTPClient } from "@x402/fetch";
-import { createEd25519Signer } from "@x402/stellar";
+import { x402Client, wrapFetchWithPayment } from "@x402/fetch";
+import { createEd25519Signer, ExactStellarScheme } from "@x402/stellar";
 
 const BASE_URL = process.env.PAYGATE_URL ?? "http://localhost:3000";
 const AGENT_SECRET = process.env.AGENT_STELLAR_SECRET_KEY;
@@ -27,12 +27,13 @@ async function main() {
     : "stellar:testnet";
 
   const signer = createEd25519Signer(AGENT_SECRET, network as any);
-  const client = new x402HTTPClient({ signer });
+  const client = new x402Client().register(network as any, new ExactStellarScheme(signer, { areFeesSponsored: true }));
+  const wrappedFetch = wrapFetchWithPayment(fetch, client);
 
   console.log(`\n🚀 Calling paywalled endpoint: ${BASE_URL}/api/x/${SLUG}`);
-  console.log("   Expecting: 402 → auto-pay → 200...\n");
+  console.log(`   Expecting: 402 → auto-pay → 200...\n`);
 
-  const res = await client.fetch(`${BASE_URL}/api/x/${SLUG}`);
+  const res = await wrappedFetch(`${BASE_URL}/api/x/${SLUG}`);
 
   if (res.status !== 200) {
     const text = await res.text();
