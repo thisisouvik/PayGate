@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { CopyEndpointChip } from "@/components/CopyEndpointChip";
 import { Settings, Plus, Play, BarChart2 } from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
+import { ApiPageToastTrigger } from "@/components/ApiPageToastTrigger";
 
 export default async function ApisPage() {
   const session = await getSession();
@@ -22,6 +24,10 @@ export default async function ApisPage() {
 
   return (
     <div className="space-y-6">
+      {/* Toast trigger for post-action notifications */}
+      <Suspense>
+        <ApiPageToastTrigger />
+      </Suspense>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">My APIs</h1>

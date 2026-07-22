@@ -4,7 +4,7 @@ import { getDeveloperTotalEarnings } from "@/lib/db/calls";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DollarSign, Activity, TerminalSquare } from "lucide-react";
+import { DollarSign, Activity, TerminalSquare, BookOpen, ArrowRight, Zap, Code2, Wallet } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -25,6 +25,8 @@ export default async function DashboardPage() {
     getDeveloperTotalCalls(session.developerId)
   ]);
 
+  const isNewUser = apis.length === 0 && totalCalls === 0;
+
   return (
     <div className="space-y-8">
       <div>
@@ -33,6 +35,97 @@ export default async function DashboardPage() {
           Your APIs, earnings, and metrics at a glance.
         </p>
       </div>
+
+      {/* ── Welcome Walkthrough Card (new users only) ─────────────────────── */}
+      {isNewUser && (
+        <div className="rounded-2xl border border-violet-500/25 bg-gradient-to-br from-violet-900/20 via-zinc-900/30 to-teal-900/10 p-6 relative overflow-hidden">
+          {/* Background decoration */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-violet-600/5 via-transparent to-transparent pointer-events-none" />
+          
+          <div className="relative">
+            <div className="flex items-start gap-4 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-violet-500/20 border border-violet-500/30 flex items-center justify-center shrink-0">
+                <BookOpen className="w-5 h-5 text-violet-400" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-zinc-100">
+                  Welcome to PayGate! 👋
+                </h2>
+                <p className="text-zinc-400 text-sm mt-0.5">
+                  You&apos;re all set. Here&apos;s how to get your first API earning USDC in 3 steps.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid sm:grid-cols-3 gap-3 mb-5">
+              {[
+                {
+                  icon: <Wallet className="w-4 h-4 text-teal-400" />,
+                  step: "01",
+                  title: "Wallet Connected",
+                  desc: "Your Stellar wallet is verified and ready to receive USDC payments.",
+                  done: true,
+                },
+                {
+                  icon: <Code2 className="w-4 h-4 text-violet-400" />,
+                  step: "02",
+                  title: "Register an API",
+                  desc: "Point PayGate at any HTTP endpoint and set your price per call.",
+                  done: false,
+                },
+                {
+                  icon: <Zap className="w-4 h-4 text-amber-400" />,
+                  step: "03",
+                  title: "Start Earning",
+                  desc: "Share your paywalled URL. Every call settles USDC to your wallet.",
+                  done: false,
+                },
+              ].map((item) => (
+                <div
+                  key={item.step}
+                  className={`rounded-xl border p-4 ${
+                    item.done
+                      ? "border-teal-500/30 bg-teal-500/5"
+                      : "border-zinc-700/60 bg-zinc-900/40"
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className={`text-xs font-mono ${item.done ? "text-teal-500" : "text-zinc-600"}`}>
+                      {item.step}
+                    </span>
+                    {item.icon}
+                    {item.done && (
+                      <span className="ml-auto text-xs text-teal-400 font-medium">✓ Done</span>
+                    )}
+                  </div>
+                  <p className="text-sm font-semibold text-zinc-100 mb-1">{item.title}</p>
+                  <p className="text-xs text-zinc-500 leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+              <Button
+                asChild
+                className="bg-violet-600 hover:bg-violet-700 text-white shadow-md shadow-violet-900/30"
+              >
+                <Link href="/apis/new">
+                  Register Your First API <ArrowRight className="ml-2 w-4 h-4" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="ghost"
+                className="text-zinc-400 hover:text-white hover:bg-zinc-800"
+              >
+                <Link href="/guide">
+                  Read the Developer Guide
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-3">
@@ -136,4 +229,3 @@ export default async function DashboardPage() {
     </div>
   );
 }
-
