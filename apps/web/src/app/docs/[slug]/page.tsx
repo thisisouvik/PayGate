@@ -18,11 +18,18 @@ export default async function ApiDocsPage({ params }: { params: Promise<{ slug: 
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 py-8 px-4">
-      <Button variant="ghost" asChild className="text-zinc-400 hover:text-white mb-2">
-        <Link href="/directory">
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Directory
-        </Link>
-      </Button>
+      <div className="flex items-center justify-between mb-2">
+        <Button variant="ghost" asChild className="text-zinc-400 hover:text-white">
+          <Link href="/directory">
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Directory
+          </Link>
+        </Button>
+        <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white shadow-lg shadow-teal-500/20">
+          <Link href={`/playground/${slug}`}>
+            Try in Playground
+          </Link>
+        </Button>
+      </div>
 
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-3">

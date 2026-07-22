@@ -2,7 +2,7 @@ import { getListedApis } from "@/lib/db/apis";
 import { getBaseUrl } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Globe, TerminalSquare, ArrowRight } from "lucide-react";
+import { Globe, TerminalSquare, ArrowRight, Play } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -61,7 +61,16 @@ export default async function DirectoryPage() {
                 </div>
               </CardContent>
               
-              <CardFooter className="pt-0">
+              <CardFooter className="pt-0 flex flex-col gap-2">
+                <Button asChild className="w-full justify-between bg-teal-600/10 hover:bg-teal-600/20 text-teal-400 border border-teal-500/20">
+                  <Link href={`/playground/${api.slug}`}>
+                    <span className="flex items-center">
+                      <Play className="w-4 h-4 mr-2" />
+                      Try in Playground
+                    </span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </Button>
                 <Button variant="ghost" asChild className="w-full justify-between text-zinc-400 hover:text-white hover:bg-zinc-800">
                   <Link href={`/docs/${api.slug}`}>
                     <span className="flex items-center">
