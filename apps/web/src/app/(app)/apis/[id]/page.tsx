@@ -12,10 +12,11 @@ import { EarningsChart } from "@/components/EarningsChart";
 import { LiveFeed } from "@/components/LiveFeed";
 import { TopCallers } from "@/components/TopCallers";
 
-export default async function ApiDetailPage({ params }: { params: { id: string } }) {
+export default async function ApiDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const baseUrl = getBaseUrl();
+  const { id } = await params;
   const session = await getSession();
-  const api = await getApiById(params.id, session.developerId);
+  const api = await getApiById(id, session.developerId);
 
   if (!api) {
     notFound();

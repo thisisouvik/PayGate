@@ -1,5 +1,6 @@
 import { getSession } from "@/lib/auth/session";
 import { getApisByDeveloper } from "@/lib/db/apis";
+import { getBaseUrl } from "@/lib/utils";
 import { 
   Table, 
   TableBody, 
@@ -10,12 +11,14 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Settings, Plus } from "lucide-react";
+import { CopyEndpointChip } from "@/components/CopyEndpointChip";
+import { Settings, Plus, Play, BarChart2 } from "lucide-react";
 import Link from "next/link";
 
 export default async function ApisPage() {
   const session = await getSession();
   const apis = await getApisByDeveloper(session.developerId);
+  const baseUrl = getBaseUrl();
 
   return (
     <div className="space-y-6">
@@ -77,12 +80,49 @@ export default async function ApisPage() {
                       {api._count.calls}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" asChild className="text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800">
-                        <Link href={`/apis/${api.id}/edit`}>
-                          <Settings className="h-4 w-4" />
-                          <span className="sr-only">Edit {api.name}</span>
-                        </Link>
-                      </Button>
+                      <div className="flex items-center justify-end gap-1">
+                        {/* Click-to-copy endpoint chip */}
+                        <CopyEndpointChip url={`${baseUrl}/api/x/${api.slug}`} />
+
+                        {/* Test in Playground */}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          asChild
+                          className="text-zinc-400 hover:text-teal-400 hover:bg-zinc-800 gap-1.5"
+                        >
+                          <Link href={`/playground/${api.slug}`}>
+                            <Play className="h-3.5 w-3.5" />
+                            <span className="hidden sm:inline">Test</span>
+                          </Link>
+                        </Button>
+
+                        {/* Earnings & transaction history */}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          asChild
+                          className="text-zinc-400 hover:text-violet-400 hover:bg-zinc-800 gap-1.5"
+                        >
+                          <Link href={`/apis/${api.id}`}>
+                            <BarChart2 className="h-3.5 w-3.5" />
+                            <span className="hidden sm:inline">Earnings</span>
+                          </Link>
+                        </Button>
+
+                        {/* Edit settings */}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          asChild
+                          className="text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800"
+                        >
+                          <Link href={`/apis/${api.id}/edit`}>
+                            <Settings className="h-4 w-4" />
+                            <span className="sr-only">Edit {api.name}</span>
+                          </Link>
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

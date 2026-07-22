@@ -20,7 +20,7 @@ export default async function ApiDocsPage({ params }: { params: Promise<{ slug: 
     <div className="max-w-4xl mx-auto space-y-8 py-8 px-4">
       <div className="flex items-center justify-between mb-2">
         <Button variant="ghost" asChild className="text-zinc-400 hover:text-white">
-          <Link href="/directory">
+          <Link href="/marketplace">
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Directory
           </Link>
         </Button>

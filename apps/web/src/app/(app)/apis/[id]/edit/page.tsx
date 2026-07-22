@@ -9,9 +9,10 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
 
-export default async function EditApiPage({ params }: { params: { id: string } }) {
+export default async function EditApiPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await getSession();
-  const api = await getApiById(params.id, session.developerId);
+  const api = await getApiById(id, session.developerId);
 
   if (!api) {
     notFound();

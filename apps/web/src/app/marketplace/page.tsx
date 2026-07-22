@@ -5,13 +5,17 @@ import { Badge } from "@/components/ui/badge";
 import { Globe, TerminalSquare, ArrowRight, Play } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { PublicNav } from "@/components/PublicNav";
 
 export default async function DirectoryPage() {
   const apis = await getListedApis();
   const baseUrl = getBaseUrl();
 
   return (
-    <div className="space-y-8">
+    <div className="min-h-screen bg-[#080810] text-zinc-50 font-sans">
+      <PublicNav />
+      
+      <div className="max-w-6xl mx-auto px-4 pt-28 pb-20 space-y-8">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-800 pb-8">
         <div>
@@ -85,6 +89,7 @@ export default async function DirectoryPage() {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }
